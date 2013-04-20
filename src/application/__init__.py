@@ -26,7 +26,10 @@ import urls
 # Flask-DebugToolbar (only enabled when DEBUG=True)
 # toolbar = DebugToolbarExtension(app)
 
-app.debug = True
+
+# enable for debugging capabilities
+#app.debug = True
+
 # Werkzeug Debugger (only enabled when DEBUG=True)
 if app.debug:
     app = DebuggedApplication(app, evalex=True)

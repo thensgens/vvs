@@ -17,18 +17,18 @@ from flask_cache import Cache
 
 from application import app, vm_start_time
 #from decorators import login_required, admin_required
-from forms import ExampleForm, ChatForm
+#from forms import ExampleForm, ChatForm
 from models import ExampleModel
-
-import datetime
 
 # Flask-Cache (configured to use App Engine Memcache API)
 cache = Cache(app)
 
 messages = []
 
+
 def home():
     return redirect(url_for('chatroom'))
+
 
 def chatroom():
     if request.method == 'POST':
@@ -57,7 +57,6 @@ def chatroom():
             #return redirect(url_for('list_examples'))
     #return render_template('list_examples.html', examples=examples, form=form)
 
-
 #@login_required
 #def edit_example(example_id):
     #example = ExampleModel.get_by_id(example_id)
@@ -70,6 +69,7 @@ def chatroom():
             #flash(u'Example %s successfully saved.' % example_id, 'success')
             #return redirect(url_for('list_examples'))
     #return render_template('edit_example.html', example=example, form=form)
+
 
 
 #@login_required
@@ -104,4 +104,3 @@ def warmup():
 
     #"""
     return ''
-
