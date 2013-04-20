@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block style_block %}
+    <style type="text/css">
+        table.table { width: 60%; }
+    </style>
+{% endblock %}
+
+{% block content %}
+
+    <h1>Example: Chat Room</h1>
+    <p>(VM start time: {{ vm_time }})</p>
+    {% for message in messages %}
+        <p> {{ message }} </p>
+    {% endfor %}
+    <form action="{{ url_for('chatroom') }}" method="post">
+        <div><b>Name:</b>
+            <textarea name="name" rows="1" cols="20"></textarea></div>
+            <p><b>Message</b></p>
+        <div><textarea name="message" rows="5" cols="60"></textarea></div>
+        <div><input type="submit" class="btn" value="Send your Message"></input></div>
+    </form>
+
+{% endblock content %}

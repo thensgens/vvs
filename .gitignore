@@ -8,6 +8,7 @@
 *.project
 *.pydevproject
 *.kpf
+src/tags
 
 # Don't store secret keys in version control
 secret_keys.py

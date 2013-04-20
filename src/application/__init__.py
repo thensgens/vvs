@@ -7,8 +7,9 @@ from flask import Flask
 from flask_debugtoolbar import DebugToolbarExtension
 from gae_mini_profiler import profiler, templatetags
 from werkzeug.debug import DebuggedApplication
+import datetime
 
-
+vm_start_time = datetime.datetime.now()
 app = Flask('application')
 app.config.from_object('application.settings')
 
@@ -25,6 +26,7 @@ import urls
 # Flask-DebugToolbar (only enabled when DEBUG=True)
 # toolbar = DebugToolbarExtension(app)
 
+app.debug = True
 # Werkzeug Debugger (only enabled when DEBUG=True)
 if app.debug:
     app = DebuggedApplication(app, evalex=True)
