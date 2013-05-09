@@ -18,23 +18,56 @@ from flask_cache import Cache
 from application import app, vm_start_time
 #from decorators import login_required, admin_required
 #from forms import ExampleForm, ChatForm
-from models import ExampleModel
+from models import ExampleModel, ChatMessage
+import datetime
+from google.appengine.ext import ndb
 
 # Flask-Cache (configured to use App Engine Memcache API)
 cache = Cache(app)
 
-messages = []
+trans_messages = []
 
 
 def home():
-    return redirect(url_for('chatroom'))
+    return redirect(url_for('chatroom_count'))
 
 
-def chatroom():
+def chatroom_all():
     if request.method == 'POST':
         msg = '%s:  %s' % (request.form.get('name'), request.form.get('message'))
-        messages.append(msg)
+        trans_messages.append(msg)
+    return render_template('chatroom.html', messages=trans_messages, vm_time=vm_start_time)
+
+
+def chatroom_count():
+    messages = ndb.gql("SELECT * FROM ChatMessage " +
+            "ORDER BY timestamp DESC LIMIT 20").fetch(20)
+    messages.reverse()
+    if request.method == 'POST':
+        #msg = '%s:  %s' % (request.form.get('name'), request.form.get('message'))
+        user = request.form.get('name')
+        message = request.form.get('message')
+        timestamp = datetime.datetime.now()
+        chat_msg = ChatMessage(user=user, timestamp=timestamp, message=message)
+        chat_msg.put()
+        messages = ndb.gql("SELECT * FROM ChatMessage " +
+                "ORDER BY timestamp DESC LIMIT 20").fetch(20)
+        messages.reverse()
     return render_template('chatroom.html', messages=messages, vm_time=vm_start_time)
+
+
+#def chatroom_time():
+    #messages = ndb.GqlQuery("SELECT * FROM ChatMessage " +
+            #"ORDER BY timestamp DESC LIMIT 20").fetch(20)
+    #messages.reverse()
+    #if request.method == 'POST':
+        #msg = '%s:  %s' % (request.form.get('name'), request.form.get('message'))
+        #messages.append(msg)
+    #return render_template('chatroom.html', messages=messages, vm_time=vm_start_time)
+
+
+
+
 
 
 #@login_required

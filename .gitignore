@@ -8,7 +8,13 @@
 *.project
 *.pydevproject
 *.kpf
-src/tags
+*.ropeproject
+*tags
+
+# don't store Ossmann's tasks
+*.pdf
+*.txt
+*.zip
 
 # Don't store secret keys in version control
 secret_keys.py

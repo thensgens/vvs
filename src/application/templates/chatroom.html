@@ -13,7 +13,7 @@
     {% for message in messages %}
         <p> {{ message }} </p>
     {% endfor %}
-    <form action="{{ url_for('chatroom') }}" method="post">
+    <form action="{{ url_for('chatroom_count') }}" method="post">
         <div><b>Name:</b>
             <textarea name="name" rows="1" cols="20"></textarea></div>
             <p><b>Message</b></p>

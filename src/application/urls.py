@@ -18,8 +18,11 @@ app.add_url_rule('/_ah/warmup', 'warmup', view_func=views.warmup)
 # Home page
 app.add_url_rule('/', 'home', view_func=views.home)
 
-# Chatroom
-app.add_url_rule('/chatroom', view_func=views.chatroom, methods=['GET', 'POST'])
+# Chatroom with all messages
+app.add_url_rule('/chatroom_all', view_func=views.chatroom_all, methods=['GET', 'POST'])
+
+# Chatroom with limited count
+app.add_url_rule('/chatroom_count', view_func=views.chatroom_count, methods=['GET', 'POST'])
 
 # Examples list page
 #app.add_url_rule('/examples', 'list_examples', view_func=views.list_examples, methods=['GET', 'POST'])
@@ -35,6 +38,8 @@ app.add_url_rule('/chatroom', view_func=views.chatroom, methods=['GET', 'POST'])
 
 # Delete an example
 #app.add_url_rule('/examples/<int:example_id>/delete', view_func=views.delete_example, methods=['POST'])
+
+
 
 ## Error handlers
 # Handle 404 errors
