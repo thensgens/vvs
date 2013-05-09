@@ -36,6 +36,7 @@ def chatroom():
         messages.append(msg)
     return render_template('chatroom.html', messages=messages, vm_time=vm_start_time)
 
+
 #@login_required
 #def list_examples():
     #"""List all examples"""
