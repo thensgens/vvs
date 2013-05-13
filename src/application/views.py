@@ -1,12 +1,7 @@
 """
 views.py
 
-URL route handlers
-
-Note that any handler params must match the URL route params.
-For example the *say_hello* handler, handling the URL route '/hello/<username>',
-  must be passed *username* as the argument.
-
+This module contains all necessary view functions.
 """
 from google.appengine.api import users
 from google.appengine.runtime.apiproxy_errors import CapabilityDisabledError
@@ -18,56 +13,66 @@ from flask_cache import Cache
 from application import app, vm_start_time
 #from decorators import login_required, admin_required
 #from forms import ExampleForm, ChatForm
-from models import ExampleModel, ChatMessage
+from models import ChatMessage
 import datetime
 from google.appengine.ext import ndb
 
 # Flask-Cache (configured to use App Engine Memcache API)
 cache = Cache(app)
 
-trans_messages = []
 
-
+@app.route('/')
 def home():
-    return redirect(url_for('chatroom_count'))
+    return redirect(url_for('chatroom_all'))
 
 
+@app.route('/talk', methods=['GET', 'POST'])
 def chatroom_all():
+    messages = ndb.gql('SELECT * FROM ChatMessage ORDER BY timestamp')
     if request.method == 'POST':
-        msg = '%s:  %s' % (request.form.get('name'), request.form.get('message'))
-        trans_messages.append(msg)
-    return render_template('chatroom.html', messages=trans_messages, vm_time=vm_start_time)
-
-
-def chatroom_count():
-    messages = ndb.gql("SELECT * FROM ChatMessage " +
-            "ORDER BY timestamp DESC LIMIT 20").fetch(20)
-    messages.reverse()
-    if request.method == 'POST':
-        #msg = '%s:  %s' % (request.form.get('name'), request.form.get('message'))
-        user = request.form.get('name')
-        message = request.form.get('message')
-        timestamp = datetime.datetime.now()
+        user, message, timestamp = request.form.get('name'), request.form.get('message'), datetime.datetime.now()
         chat_msg = ChatMessage(user=user, timestamp=timestamp, message=message)
         chat_msg.put()
-        messages = ndb.gql("SELECT * FROM ChatMessage " +
-                "ORDER BY timestamp DESC LIMIT 20").fetch(20)
+        messages = ndb.gql('SELECT * FROM ChatMessage ORDER BY timestamp')
+    return render_template('chatroom.html', messages=messages, vm_time=vm_start_time, mode='chatroom_all')
+
+
+@app.route('/limited/count', methods=['GET', 'POST'])
+def chatroom_count():
+    messages = ndb.gql('SELECT * FROM ChatMessage ORDER BY timestamp DESC LIMIT 20').fetch(20)
+    messages.reverse()
+    if request.method == 'POST':
+        user, message, timestamp = request.form.get('name'), request.form.get('message'), datetime.datetime.now()
+        chat_msg = ChatMessage(user=user, timestamp=timestamp, message=message)
+        chat_msg.put()
+        messages = ndb.gql('SELECT * FROM ChatMessage ORDER BY timestamp DESC LIMIT 20').fetch(20)
         messages.reverse()
-    return render_template('chatroom.html', messages=messages, vm_time=vm_start_time)
+    return render_template('chatroom.html', messages=messages, vm_time=vm_start_time, mode='chatroom_count')
 
 
-#def chatroom_time():
-    #messages = ndb.GqlQuery("SELECT * FROM ChatMessage " +
-            #"ORDER BY timestamp DESC LIMIT 20").fetch(20)
-    #messages.reverse()
-    #if request.method == 'POST':
-        #msg = '%s:  %s' % (request.form.get('name'), request.form.get('message'))
-        #messages.append(msg)
-    #return render_template('chatroom.html', messages=messages, vm_time=vm_start_time)
+@app.route('/limited/time', methods=['GET', 'POST'])
+def chatroom_time():
+    messages = ChatMessage.gql('WHERE timestamp > :fiveago ORDER BY timestamp',
+            fiveago=datetime.datetime.now() - datetime.timedelta(minutes=5))
+    if request.method == 'POST':
+        user, message, timestamp = request.form.get('name'), request.form.get('message'), datetime.datetime.now()
+        chat_msg = ChatMessage(user=user, timestamp=timestamp, message=message)
+        chat_msg.put()
+        messages = ChatMessage.gql('WHERE timestamp > :fiveago ORDER BY timestamp',
+            fiveago=datetime.datetime.now() - datetime.timedelta(minutes=5))
+    return render_template('chatroom.html', messages=messages, vm_time=vm_start_time, mode='chatroom_time')
 
 
+##### Error handling pages #####
+# Handle 404 errors
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
-
+# Handle 500 errors
+@app.errorhandler(500)
+def server_error(e):
+    return render_template('500.html'), 500
 
 
 #@login_required
