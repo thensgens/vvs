@@ -39,13 +39,13 @@ def chatroom_all():
 
 @app.route('/limited/count', methods=['GET', 'POST'])
 def chatroom_count():
-    messages = ndb.gql('SELECT * FROM ChatMessage ORDER BY timestamp DESC LIMIT 20').fetch(20)
+    messages = ndb.gql('SELECT * FROM ChatMessage ORDER BY timestamp DESC LIMIT 5').fetch(5)
     messages.reverse()
     if request.method == 'POST':
         user, message, timestamp = request.form.get('name'), request.form.get('message'), datetime.datetime.now()
         chat_msg = ChatMessage(user=user, timestamp=timestamp, message=message)
         chat_msg.put()
-        messages = ndb.gql('SELECT * FROM ChatMessage ORDER BY timestamp DESC LIMIT 20').fetch(20)
+        messages = ndb.gql('SELECT * FROM ChatMessage ORDER BY timestamp DESC LIMIT 5').fetch(5)
         messages.reverse()
     return render_template('chatroom.html', messages=messages, vm_time=vm_start_time, mode='chatroom_count')
 
@@ -53,13 +53,13 @@ def chatroom_count():
 @app.route('/limited/time', methods=['GET', 'POST'])
 def chatroom_time():
     messages = ChatMessage.gql('WHERE timestamp > :fiveago ORDER BY timestamp',
-            fiveago=datetime.datetime.now() - datetime.timedelta(minutes=5))
+            fiveago=datetime.datetime.now() - datetime.timedelta(minutes=2))
     if request.method == 'POST':
         user, message, timestamp = request.form.get('name'), request.form.get('message'), datetime.datetime.now()
         chat_msg = ChatMessage(user=user, timestamp=timestamp, message=message)
         chat_msg.put()
         messages = ChatMessage.gql('WHERE timestamp > :fiveago ORDER BY timestamp',
-            fiveago=datetime.datetime.now() - datetime.timedelta(minutes=5))
+            fiveago=datetime.datetime.now() - datetime.timedelta(minutes=2))
     return render_template('chatroom.html', messages=messages, vm_time=vm_start_time, mode='chatroom_time')
 
 
