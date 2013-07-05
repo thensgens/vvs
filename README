@@ -1,0 +1,5 @@
+Example (and simple) web application running on Google App Engine, powered by Python & Flask.
+Post messages, send messages via email (i.e. recipient as help@thens-vvs.appspotmail.com) and different end points
+for displaying messages (/talk, /limited, /count).
+
+Running instance is located at https://thens-vvs.appspot.com.
